@@ -385,7 +385,7 @@ class XiaomiMiioRadio(RadioDevice):
             _LOGGER.error(message) 
             if self._notify:
                 log_msg = "TTS: %s" % message
-                self.hass.components.persistent_notification.async_create(log_msg, title='AC partner TTS', notification_id=99999) 
+                self.hass.components.persistent_notification.async_create(log_msg, title='AC partner TTS', notification_id="99999") 
         except Exception as error:
             _LOGGER.error(error)
             return False
@@ -425,7 +425,7 @@ class XiaomiMiioRadio(RadioDevice):
             _LOGGER.error("play_vod(%s)" % url) 
             if self._notify:
                 log_msg = "VOD finished."
-                self.hass.components.persistent_notification.async_create(log_msg, title='AC partner TTS', notification_id=99999) 
+                self.hass.components.persistent_notification.async_create(log_msg, title='AC partner TTS', notification_id="99999") 
         except Exception as error:
             _LOGGER.error(error)
             return False

@@ -1,0 +1,100 @@
+# Describes the format for available radio services
+
+turn_on:
+  description: Turn on the radio.
+  fields:
+    entity_id:
+      description: Name(s) of entities to turn on.
+      example: 'miio_acpartner.childrenroom'
+    activity:
+      description: Activity ID or Activity Name to start.
+      example: 'BedroomTV'
+
+toggle:
+  description: Toggles the radio.
+  fields:
+    entity_id:
+      description: Name(s) of entities to toggle.
+      example: 'miio_acpartner.childrenroom'
+
+turn_off:
+  description: Turn off the radio.
+  fields:
+    entity_id:
+      description: Name(s) of entities.
+      example: 'miio_acpartner.childrenroom'
+
+next_radio:
+  description: Turn the radio to next program.
+  fields:
+    entity_id:
+      description: Name(s) of entities.
+      example: 'miio_acpartner.childrenroom'
+
+prev_radio:
+  description: Turn the radio to previous program.
+  fields:
+    entity_id:
+      description: Name(s) of entities.
+      example: 'miio_acpartner.childrenroom'
+
+play_radio:
+  description: Turn on the radio and turn it to specified program.
+  fields:
+    entity_id:
+      description: Name(s) of entities to send command from.
+      example: 'miio_acpartner.childrenroom'
+    program_id:
+      description: The specified program's id (please find it in states).
+      example: 1179
+      
+set_volume:
+  description: Set the volume of radio.
+  fields:
+    entity_id:
+      description: Name(s) of entities.
+      example: 'miio_acpartner.childrenroom'
+    volume:
+      description: The new volume of radio.
+      example: 40
+      
+play_ringtone:
+  description: Play the specified ringtone from a gateway or AC partner.
+  fields:
+    entity_id:
+      description: Name(s) of entities.
+      example: 'miio_acpartner.childrenroom'
+    ringtone_id:
+      description: The specified ringtone's id (please find it in states).
+      example: 1
+    volume:
+      description: (optional) The new volume of radio.
+      example: 40
+      
+play_tts:
+  description: Send a message to a gateway or AC partner, and speech it.
+  fields:
+    entity_id:
+      description: Name(s) of entities.
+      example: 'miio_acpartner.childrenroom'
+    message:
+      description: The messages want to be speeched.
+      example: 1
+    volume:
+      description: (optional) The new volume of radio.
+      example: 40
+      
+play_vod:
+  description: Play a audio file to a gateway or AC partner, and speech it.
+  fields:
+    entity_id:
+      description: Name(s) of entities.
+      example: 'miio_acpartner.childrenroom'
+    url:
+      description: The audio url
+      example: http://www.music.com/1111.mp3
+    volume:
+      description: (optional) The new volume of radio.
+      example: 40
+          
+

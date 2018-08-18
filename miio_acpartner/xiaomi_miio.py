@@ -60,8 +60,8 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
     vol.Optional(CONF_BASEURL, default = ''): cv.string,
     vol.Optional(CONF_BASEPATH, default = ''): cv.string,
     vol.Optional(CONF_SPEED, default = '5'): cv.string,
-    vol.Optional(CONF_PITCH, default = '5'): cv.string,
-    vol.Optional(CONF_VOLUME, default = '7'): cv.string,
+    vol.Optional(CONF_PITCH, default = '7'): cv.string,
+    vol.Optional(CONF_VOLUME, default = '4'): cv.string,
     vol.Optional(CONF_PERSON, default = '0'): cv.string,
     vol.Optional(CONF_NOTIFY, default = False): cv.boolean,
 }, extra=vol.ALLOW_EXTRA)
@@ -140,7 +140,7 @@ class BaiduTTS:
                                                              'lan': 'zh',
                                                              'tok': self.Token,
                                                              'ctp': '1',
-                                                             'aue': 3,
+                                                             'aue': 6,
                                                              'cuid': 'HomeAssistant',
                                                              'spd': self.speed,
                                                              'pit': self.pitch,
@@ -208,7 +208,7 @@ class XiaomiMiioRadio(RadioDevice):
         self._pitch = pitch
         self._volume = volume
         self._person = person
-        self._mp3Path = basePath + "/www/tts_" + str(unique_id).replace(":", "") + ".mp3"
+        self._mp3Path = basePath + "/www/tts_" + str(unique_id).replace(":", "") + ".wav"
         self._aacPath = basePath + "/www/tts_" + str(unique_id).replace(":", "") + ".aac"
         self._ttsUrl = baseUrl + "/local/tts_" + str(unique_id).replace(":", "") + ".aac"
         self._notify = notify
@@ -229,19 +229,40 @@ class XiaomiMiioRadio(RadioDevice):
     @property
     def should_poll(self):
         return True
+    def all_channels(self):
+        index = 0
+        channels = []
+        result = self._device.send("get_channels", {"start": 0})
+        while "chs" in result:
+            for ch in result["chs"]:
+                if "id" in ch:
+                    channels.append(ch["id"])
+            index = index + 10
+            result = self._device.send("get_channels", {"start": index})
+        return channels
+    def all_ringtones(self, type, sysOnly = True):
+        ringtones = []
+        result = self._device.send("get_music_info", [type])
+        if "list" in result:
+            result = result["list"]
+            for ringtone in result:
+                if (not sysOnly) or (int(ringtone["mid"]) < 1000):
+                    ringtones.append(ringtone["mid"])
+        return ringtones
     @property
     def device_state_attributes(self):
         status = self._device.send("get_prop_fm", [])
         attrs = {
             'hidden': 'true',
-            'channels': self._device.send("get_channels", {"start": 0}),
+            'miio_channels': self.all_channels(),
             'space_free': self._device.send("get_music_free_space", []),
             'channel': status["current_program"],
             'volume': status["current_volume"],
-            'ringtones': {
-                'alarm': self._device.send("get_music_info", [0]),
-                'clock': self._device.send("get_music_info", [1]),
-                'doorbell': self._device.send("get_music_info", [2])
+            'miio_ringtones': {
+                'alarm': self.all_ringtones(0),
+                'clock': self.all_ringtones(1),
+                'chord': self.all_ringtones(2),
+                'custom': self.all_ringtones(3, False)
             }
         }
         return attrs      
@@ -274,23 +295,22 @@ class XiaomiMiioRadio(RadioDevice):
         try:
             status = self._device.send("get_prop_fm", [])
             channel = status["current_program"]
-            channels = self._device.send("get_channels", {"start": 0})
-            chs = channels["chs"]
-            if len(chs) < 1:
+            channels = self.all_channels()
+            if len(channels) < 1:
                 return False
             current_index = -1
-            for idx, val in enumerate(chs):
-                if val["id"] == channel:
+            for idx, val in enumerate(channels):
+                if val == channel:
                     current_index = idx
                     break
             if current_index == -1:
                 current_index = 0
-            elif current_index >= len(chs) - 1:
+            elif current_index >= len(channels) - 1:
                 current_index = 0
             else:
                 current_index = current_index + 1
-            channel = chs[current_index]
-            self._device.send("play_specify_fm", {'id': channel["id"], 'type': 0})
+            channel = channels[current_index]
+            self._device.send("play_specify_fm", {'id': channel, 'type': 0})
         except ValueError as error:
             _LOGGER.error(error)
             return False
@@ -299,23 +319,22 @@ class XiaomiMiioRadio(RadioDevice):
         try:
             status = self._device.send("get_prop_fm", [])
             channel = status["current_program"]
-            channels = self._device.send("get_channels", {"start": 0})
-            chs = channels["chs"]
-            if len(chs) < 1:
+            channels = self.all_channels()
+            if len(channels) < 1:
                 return False
             current_index = -1
-            for idx, val in enumerate(chs):
-                if val["id"] == channel:
+            for idx, val in enumerate(channels):
+                if val == channel:
                     current_index = idx
                     break
             if current_index == -1:
                 current_index = 0
             elif current_index == 0:
-                current_index = len(chs) - 1
+                current_index = len(channels) - 1
             else:
                 current_index = current_index - 1
-            channel = chs[current_index]
-            self._device.send("play_specify_fm", {'id': channel["id"], 'type': 0})
+            channel = channels[current_index]
+            self._device.send("play_specify_fm", {'id': channel, 'type': 0})
         except ValueError as error:
             _LOGGER.error(error)
             return False

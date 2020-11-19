@@ -1,0 +1,11 @@
+{
+  "domain": "xiaomi_ac_radio",
+  "name": "Xiaomi Acpartner Radio",
+  "documentation": "",
+  "requirements": ["python-miio>=0.4.0", 
+  				   "construct>=2.9.41"],
+  "dependencies": ["ffmpeg"],
+  "codeowners": [
+    "@dylan"
+  ]
+}

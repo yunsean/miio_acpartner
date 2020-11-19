@@ -4,13 +4,13 @@
 
 ### 部署安装
 
-* 将下载得到的miio_acpartner目录复制到home assistant配置目录下的custom_components中
+* 将下载得到的miio_acpartner和xiaomi_ac_radio文件夹都复制到home assistant配置目录下的custom_components中
 
 * 设备配置
 
 ``` yaml
 miio_acpartner:
-  - platform: xiaomi_miio
+  - platform: xiaomi_ac_radio
     name: "ChildrenRoom" 
     host: 192.168.2.238
     token: YOUR_TOKEN
